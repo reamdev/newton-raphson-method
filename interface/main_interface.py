@@ -8,7 +8,7 @@ from tools.input_field import InputField
 
 
 class NewtonRaphsonGUI:
-    """Clase principal para la interfaz gráfica del método de Newton-Raphson."""
+    # Clase principal para la interfaz gráfica del método de Newton-Raphson.
 
     def __init__(self, window: tk.Tk):
         self.window = window
