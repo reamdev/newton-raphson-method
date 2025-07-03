@@ -103,7 +103,7 @@ class NewtonRaphsonGUI:
                 if abs(f_prime_x) < 1e-8 and abs(f_x) < 1e-6:
                     break
                 if abs(f_prime_x) < 1e-8:
-                    raise ValueError("Derivative too small, consider a different initial guess")
+                    raise ValueError("Derivada demasiado pequeña, considere otra funcion diferente")
                 x_next = x_n - f_x / f_prime_x
                 iterations.append(x_next)
                 if abs(x_next - x_n) < tolerance:
@@ -149,6 +149,6 @@ class NewtonRaphsonGUI:
             self.canvas.draw()
         except Exception as e:
             self.ax.clear()
-            self.ax.text(0.5, 0.5, f"Graphing error: {str(e)}", fontsize=12, ha="center", va="center", color="red")
+            self.ax.text(0.5, 0.5, f"Error graficando: {str(e)}", fontsize=12, ha="center", va="center", color="red")
             self.ax.axis("off")
             self.canvas.draw()
