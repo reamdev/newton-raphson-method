@@ -1,14 +1,14 @@
 import tkinter as tk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
 import numpy as np
 from sympy import sympify, Symbol, sqrt, diff
 from interface.equation_field import EquationField
 from tools.input_field import InputField
 
-
 class NewtonRaphsonGUI:
-    # Clase principal para la interfaz gráfica del metodo de Newton-Raphson.
+    # Clase principal para la interfaz gráfica del método de Newton-Raphson.
 
     def __init__(self, window: tk.Tk):
         self.window = window
@@ -106,26 +106,24 @@ class NewtonRaphsonGUI:
     def plot_function(self, expr, x_n, iterations):
         """Grafica la función y las iteraciones de Newton-Raphson."""
         try:
-            # Definir rango para graficar
-            x_vals = np.linspace(x_n - 2, x_n + 2, 100)
+            # Definir rango para graficar (centrado en la raíz)
+            x_vals = np.linspace(max(x_n - 2, -5), min(x_n + 2, 5), 100)
             y_vals = [float(expr.subs('x', x)) for x in x_vals]
 
             # Limpiar el gráfico
             self.ax.clear()
 
             # Graficar la función
-            self.ax.plot(x_vals, y_vals, label=f"${self.equation_field.get_text_for_latex()}$")
+            latex_expr = self.equation_field.get_text_for_latex()
+            self.ax.plot(x_vals, y_vals, label=f"${latex_expr}$")
             self.ax.axhline(0, color='black', linestyle='--', linewidth=0.5)
 
             # Graficar iteraciones
             for i, x_i in enumerate(iterations[:-1]):
                 y_i = float(expr.subs('x', x_i))
                 self.ax.plot(x_i, y_i, 'ro', markersize=5)
-                # Línea hacia el eje x
                 self.ax.plot([x_i, x_i], [0, y_i], 'r--', linewidth=0.5)
-                # Línea hacia la siguiente iteración
                 x_next = iterations[i + 1]
-                y_next = float(expr.subs('x', x_next))
                 slope = float(diff(expr, 'x').subs('x', x_i))
                 if abs(slope) > 1e-10:
                     x_tangent = np.array([x_i - 0.5, x_i + 0.5])
@@ -140,6 +138,7 @@ class NewtonRaphsonGUI:
             self.ax.grid(True)
             self.ax.set_xlabel('x')
             self.ax.set_ylabel('f(x)')
+            self.ax.set_title(f"Newton-Raphson: ${latex_expr}$")
             self.canvas.draw()
         except Exception as e:
             self.ax.clear()

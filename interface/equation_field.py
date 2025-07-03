@@ -2,9 +2,8 @@ import tkinter as tk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-
 class EquationField:
-    """Clase para un campo de entrada que muestra y edita ecuaciones en formato LaTeX."""
+    # Clase para un campo de entrada que muestra y edita ecuaciones en formato LaTeX.
 
     def __init__(self, window: tk.Tk, row: int = 0, column: int = 0,
                  padx: int = 10, pady: int = 10, sticky: str = 'nsew'):
@@ -13,15 +12,15 @@ class EquationField:
         # Campo de entrada optimizado para edición
         self.entry = tk.Entry(
             window,
-            font=("Arial", 14),  # Fuente grande para legibilidad
-            width=30,  # Ancho suficiente para ecuaciones largas
-            relief="flat",  # Estilo limpio
+            font=("Arial", 14),
+            width=30,
+            relief="flat",
             highlightthickness=1,
             highlightbackground="gray",
             highlightcolor="blue"
         )
         self.entry.grid(row=row, column=column, padx=padx, pady=pady, sticky=sticky)
-        self.entry.insert(0, "x^2 - 2")  # Ecuación inicial válida
+        self.entry.insert(0, "x^3/6")  # Ecuación inicial: x^3/6
 
         # Configurar lienzo para vista previa de la ecuación
         self.fig = Figure(figsize=(3.5, 1.2))
@@ -56,10 +55,9 @@ class EquationField:
         self.update_preview()
 
     def insert_latex(self, command: str):
-        """Inserta un comando LaTeX en la posición actual del cursor."""
+        # Inserta un comando LaTeX en la posición actual del cursor.
         cursor_pos = self.entry.index(tk.INSERT)
         self.entry.insert(cursor_pos, command)
-        # Mover el cursor dentro de las llaves, si aplica
         if command in ["\\sqrt{}", "\\sin()", "\\cos()"]:
             self.entry.icursor(cursor_pos + len(command) - 1)
         elif command == "\\frac{}{}":
@@ -68,7 +66,7 @@ class EquationField:
         self.entry.focus_set()
 
     def update_preview(self, event=None):
-        """Actualiza la vista previa de la ecuación en formato LaTeX."""
+        # Actualiza la vista previa de la ecuación en formato LaTeX.
         ecuacion = self.get_text_for_latex()
         if not ecuacion:
             ecuacion = "x^2"  # Ecuación por defecto
@@ -84,20 +82,22 @@ class EquationField:
             self.canvas.draw()
 
     def get_text(self) -> str:
-        """Devuelve el texto de la ecuación para cálculos."""
+        # Devuelve el texto de la ecuación para cálculos.
         raw_text = self.entry.get().strip()
-        # Convertir entrada amigable a formato SymPy
-        return raw_text.replace("\\cdot", "*").replace("/", "/")
+        # Convertir entrada LaTeX a formato SymPy
+        return raw_text.replace("\\cdot", "*").replace("\\frac{", "").replace("}{", "/").replace("}", "")
 
     def get_text_for_latex(self) -> str:
-        """Convierte la entrada a formato LaTeX para la vista previa."""
+        #Convierte la entrada a formato LaTeX para la vista previa.
         raw_text = self.entry.get().strip()
-        # Convertir entrada amigable a LaTeX
-        latex_text = raw_text
-        # Convertir divisiones (x/y) a fracciones LaTeX
-        if "/" in latex_text and not latex_text.startswith("\\frac"):
-            parts = latex_text.split("/")
-            latex_text = "\\frac{" + parts[0] + "}{" + "/".join(parts[1:]) + "}"
+        if not raw_text:
+            return "x^2"
+        # Si ya es LaTeX (contiene \frac, \sqrt, etc.), no modificar
+        if raw_text.startswith("\\") or "\\" in raw_text[1:]:
+            return raw_text
+        # Convertir divisiones simples (x/2) a fracciones LaTeX
+        if "/" in raw_text:
+            parts = raw_text.split("/", 1)
+            return f"\\frac{{{parts[0]}}}{{{parts[1]}}}"
         # Convertir multiplicaciones (*) a \cdot
-        latex_text = latex_text.replace("*", "\\cdot")
-        return latex_text
+        return raw_text.replace("*", "\\cdot")
