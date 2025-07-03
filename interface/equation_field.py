@@ -16,17 +16,17 @@ class EquationField:
             relief="flat",
             highlightthickness=1,
             highlightbackground="gray",
-            highlightcolor="blue"
+            highlightcolor="blue",
         )
-        self.entry.grid(row=row, column=column, padx=padx, pady=pady, sticky=sticky)
-        self.entry.insert(0, "x^3 + 3x^2")  # Ecuación inicial
+        self.entry.grid(row=row+1, column=column, padx=padx, pady=pady, sticky=sticky, columnspan=2)
+        self.entry.insert(0, "x^3 + 3x^2-6")  # Ecuación inicial
 
         # Configurar lienzo para vista previa
         self.fig = Figure(figsize=(3.5, 1.2))
         self.ax = self.fig.add_subplot(111)
         self.ax.axis('off')
         self.canvas = FigureCanvasTkAgg(self.fig, master=window)
-        self.canvas.get_tk_widget().grid(row=row + 1, column=column, columnspan=2, padx=padx, pady=pady, sticky=sticky)
+        self.canvas.get_tk_widget().grid(row=row, column=column, columnspan=2, padx=padx, pady=pady, sticky=sticky)
 
         # Frame para botones
         button_frame = tk.Frame(window)
@@ -34,9 +34,9 @@ class EquationField:
 
         # Botones para comandos LaTeX
         buttons = [
-            ("x²", "^"),  # Potencia
-            ("√", "\\sqrt{}"),  # Raíz
-            ("frac", "\\frac{}{}"),  # Fracción
+            ("x²", "^2"),  # Potencia
+            # ("√", "\\sqrt{}"),  # Raíz
+            # ("frac", "\\frac{}{}"),  # Fracción
             ("·", "\\cdot"),  # Multiplicación
             ("sin", "\\sin()"),  # Seno
             ("cos", "\\cos()"),  # Coseno
@@ -44,6 +44,7 @@ class EquationField:
         for idx, (text, command) in enumerate(buttons):
             tk.Button(
                 button_frame,
+                width=int(60/len(buttons)),
                 text=text,
                 font=("Arial", 10),
                 command=lambda cmd=command: self.insert_latex(cmd)

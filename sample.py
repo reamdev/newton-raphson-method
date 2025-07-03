@@ -1,6 +1,5 @@
 from math import *
 
-"""
 # Funcion
 def f(x):
     func = cos(x)-x**3
@@ -11,7 +10,7 @@ def df(x):
     func = -sin(x)-3*x**2
     return func
 
-def NewtonRaphsonMethod(x0, tol, n):
+def newton_raphson_method(x0, tol, n):
     for k in range(n):
         x1 = x0 - f(x0)/df(x0)
         if abs(x1 - x0)<tol:
@@ -21,5 +20,5 @@ def NewtonRaphsonMethod(x0, tol, n):
         x0 = x1
         print('x', k+1, '=', x1)
 
-NewtonRaphsonMethod(pi, 0.0000001, 10)
-"""
+newton_raphson_method(pi, 0.0000001, 10)
+

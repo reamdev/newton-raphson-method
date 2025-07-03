@@ -60,12 +60,13 @@ class NewtonRaphsonGUI:
     def make_right_column(self):
         # Crea contenido de la columna derecha
         self.equation_field = EquationField(self.window, row=0, column=1)
-        self.x_input = InputField(self.window, 'Initial x value', row=3, column=1)
-        self.x_input.entry.insert(0, "-1.0")  # Ajustado para converger a x=0
-        button = tk.Button(self.window, text='Calculate', command=self.process_inputs,
+        self.x_input = InputField(self.window, 'x₀', row=3, column=1)
+        self.x_input.entry.insert(0, "1.0")  # Ajustado para converger a x=0
+
+        button = tk.Button(self.window, text='Calcular', command=self.process_inputs,
                            font=("Arial", 12), bg="lightgray")
         button.grid(row=4, column=1, columnspan=2, sticky="ew", padx=10, pady=10)
-        self.result_label = tk.Label(self.window, text="Result: ", font=("Arial", 12))
+        self.result_label = tk.Label(self.window, text="Resultado: ", font=("Arial", 12))
         self.result_label.grid(row=5, column=1, columnspan=2, padx=10, pady=10, sticky="ew")
         # Etiqueta para coordenadas
         self.coord_label = tk.Label(self.window, text="", font=("Arial", 10))
@@ -91,7 +92,7 @@ class NewtonRaphsonGUI:
             x = Symbol('x')
             expr = sympify(ecuacion, locals={"sqrt": sqrt})
             derivative = diff(expr, x)
-            max_iterations = 100
+            max_iterations = 10
             tolerance = 1e-6
             x_n = x0
             iterations = [x_n]
@@ -109,7 +110,7 @@ class NewtonRaphsonGUI:
                     break
                 x_n = x_next
 
-            self.result_label.config(text=f"Result: Root ≈ {x_n:.6f}")
+            self.result_label.config(text=f"Resultado ≈ {x_n:.6f}")
             self.plot_function(expr, x_n, iterations)
         except Exception as e:
             self.result_label.config(text=f"Error: {str(e)}")
