@@ -1,6 +1,6 @@
 import tkinter as tk
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import matplotlib.pyplot as plt
 import numpy as np
 from sympy import sympify, Symbol, sqrt, diff
@@ -26,21 +26,36 @@ class NewtonRaphsonGUI:
         self.window.rowconfigure(3, weight=1)
         self.window.rowconfigure(4, weight=1)
         self.window.rowconfigure(5, weight=1)
+        self.window.rowconfigure(6, weight=1)  # Para el frame del toolbar
 
         # Crear columnas
         self.make_left_column()
         self.make_right_column()
 
     def make_left_column(self):
-        # Crea contenido de la columna izquierda
+        # Crea un frame para contener el canvas y el toolbar
+        self.left_frame = tk.Frame(self.window)
+        self.left_frame.grid(row=0, column=0, rowspan=6, sticky="nsew", padx=10, pady=10)
+        self.left_frame.rowconfigure(0, weight=1)
+        self.left_frame.columnconfigure(0, weight=1)
+
         self.fig = Figure(figsize=(6, 4))
         self.ax = self.fig.add_subplot(111)
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.window)
-        self.canvas.get_tk_widget().grid(row=0, column=0, rowspan=6, sticky="nsew", padx=10, pady=10)
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.left_frame)
+        self.canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew")
+
+        # Subframe para el toolbar que usa pack
+        self.toolbar_frame = tk.Frame(self.left_frame)
+        self.toolbar_frame.grid(row=1, column=0, sticky="ew")
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.toolbar_frame)  # Toolbar en el subframe
+        self.toolbar.update()
+
         self.ax.clear()
         self.ax.text(0.5, 0.5, "Enter an equation to graph", fontsize=14, ha="center", va="center")
         self.ax.axis("off")
         self.canvas.draw()
+        # Evento para mostrar coordenadas
+        self.canvas.mpl_connect('motion_notify_event', self.on_mouse_move)
 
     def make_right_column(self):
         # Crea contenido de la columna derecha
@@ -52,6 +67,21 @@ class NewtonRaphsonGUI:
         button.grid(row=4, column=1, columnspan=2, sticky="ew", padx=10, pady=10)
         self.result_label = tk.Label(self.window, text="Result: ", font=("Arial", 12))
         self.result_label.grid(row=5, column=1, columnspan=2, padx=10, pady=10, sticky="ew")
+        # Etiqueta para coordenadas
+        self.coord_label = tk.Label(self.window, text="", font=("Arial", 10))
+        self.coord_label.grid(row=6, column=1, columnspan=2, padx=10, pady=5, sticky="ew")
+
+    def on_mouse_move(self, event):
+        # Muestra las coordenadas al mover el mouse
+        if event.inaxes:
+            x = event.xdata
+            y = event.ydata
+            if x is not None and y is not None:
+                self.coord_label.config(text=f"X: {x:.2f}, Y: {y:.2f}")
+            else:
+                self.coord_label.config(text="")
+        else:
+            self.coord_label.config(text="")
 
     def process_inputs(self):
         # Procesa la ecuación con Newton-Raphson
