@@ -20,5 +20,6 @@ def newton_raphson_method(x0, tol, n):
         x0 = x1
         print('x', k+1, '=', x1)
 
+# newton_raphson_method(pi, 1e-6, 10)
 newton_raphson_method(pi, 0.0000001, 10)
 
